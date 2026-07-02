@@ -1,41 +1,33 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
+import mongoose from "mongoose";
 
-const Review = sequelize.define(
-  'Review',
+const ReviewSchema = new mongoose.Schema(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     rating: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        min: 1,
-        max: 5,
-      },
+      type: Number,
+      required: [true, "Please add a rating"],
+      min: 1,
+      max: 5,
     },
     comment: {
-      type: DataTypes.TEXT,
-      allowNull: false,
+      type: String,
+      required: [true, "Please add a comment"],
       trim: true,
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    tour: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tour",
+      required: true,
+    },
   },
-  {
-    timestamps: true,
-    tableName: 'reviews',
-  }
+  { timestamps: true },
 );
 
 // Unique constraint on tour and user
-Review.addHook('beforeSync', (options) => {
-  options.uniqueKeys = {
-    unique_review: {
-      fields: ['tourId', 'userId'],
-    },
-  };
-});
+ReviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 
-export default Review;
+export default mongoose.model("Review", ReviewSchema);

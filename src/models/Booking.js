@@ -1,49 +1,47 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
+import mongoose from "mongoose";
 
-const Booking = sequelize.define(
-  'Booking',
+const BookingSchema = new mongoose.Schema(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     departureDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
+      type: Date,
+      required: [true, "Please add a departure date"],
     },
     passengers: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        min: 1,
-      },
+      type: Number,
+      required: [true, "Please add number of passengers"],
+      min: 1,
     },
     notes: {
-      type: DataTypes.TEXT,
-      defaultValue: '',
+      type: String,
+      default: "",
     },
     totalPrice: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-      validate: {
-        min: 0,
-      },
+      type: Number,
+      required: [true, "Please add total price"],
+      min: 0,
     },
     status: {
-      type: DataTypes.ENUM('pending', 'approved', 'cancelled', 'completed'),
-      defaultValue: 'pending',
+      type: String,
+      enum: ["pending", "approved", "cancelled", "completed"],
+      default: "pending",
     },
     paymentStatus: {
-      type: DataTypes.ENUM('unpaid', 'paid', 'refunded'),
-      defaultValue: 'unpaid',
+      type: String,
+      enum: ["unpaid", "paid", "refunded"],
+      default: "unpaid",
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    tour: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tour",
+      required: true,
     },
   },
-  {
-    timestamps: true,
-    tableName: 'bookings',
-  }
+  { timestamps: true },
 );
 
-export default Booking;
+export default mongoose.model("Booking", BookingSchema);

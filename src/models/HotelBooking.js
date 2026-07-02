@@ -1,53 +1,51 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
+import mongoose from "mongoose";
 
-const HotelBooking = sequelize.define(
-  'HotelBooking',
+const HotelBookingSchema = new mongoose.Schema(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     checkIn: {
-      type: DataTypes.DATE,
-      allowNull: false,
+      type: Date,
+      required: [true, "Please add check-in date"],
     },
     checkOut: {
-      type: DataTypes.DATE,
-      allowNull: false,
+      type: Date,
+      required: [true, "Please add check-out date"],
     },
     guests: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        min: 1,
-      },
+      type: Number,
+      required: [true, "Please add number of guests"],
+      min: 1,
     },
     totalPrice: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-      validate: {
-        min: 0,
-      },
+      type: Number,
+      required: [true, "Please add total price"],
+      min: 0,
     },
     notes: {
-      type: DataTypes.TEXT,
-      defaultValue: '',
+      type: String,
+      default: "",
     },
     status: {
-      type: DataTypes.ENUM('pending', 'approved', 'cancelled', 'completed'),
-      defaultValue: 'pending',
+      type: String,
+      enum: ["pending", "approved", "cancelled", "completed"],
+      default: "pending",
     },
     paymentStatus: {
-      type: DataTypes.ENUM('unpaid', 'paid', 'refunded'),
-      defaultValue: 'unpaid',
+      type: String,
+      enum: ["unpaid", "paid", "refunded"],
+      default: "unpaid",
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    hotel: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Hotel",
+      required: true,
     },
   },
-  {
-    timestamps: true,
-    tableName: 'hotel_bookings',
-  }
+  { timestamps: true },
 );
 
-export default HotelBooking;
+export default mongoose.model("HotelBooking", HotelBookingSchema);
