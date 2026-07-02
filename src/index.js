@@ -8,6 +8,7 @@ import articleRoutes from "./routes/articleRoutes.js";
 import tourRoutes from "./routes/tourRoutes.js";
 import hotelRoutes from "./routes/hotelRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import hotelBookingRoutes from "./routes/hotelBookingRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 
@@ -33,6 +34,7 @@ app.use("/api/articles", articleRoutes);
 app.use("/api/tours", tourRoutes);
 app.use("/api/hotels", hotelRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/hotel-bookings", hotelBookingRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
 
