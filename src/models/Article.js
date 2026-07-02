@@ -1,45 +1,28 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
+import mongoose from "mongoose";
 
-const Article = sequelize.define(
-  'Article',
+const ArticleSchema = new mongoose.Schema(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     title: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: [true, "Please add a title"],
       trim: true,
     },
     content: {
-      type: DataTypes.TEXT,
-      allowNull: false,
+      type: String,
+      required: [true, "Please add content"],
     },
-    province: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      trim: true,
+    image: {
+      type: String,
+      default: "",
     },
-    category: {
-      type: DataTypes.ENUM('dia-danh', 'am-thuc', 'le-hoi', 'kinh-nghiem'),
-      defaultValue: 'kinh-nghiem',
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    coverImage: {
-      type: DataTypes.STRING,
-      defaultValue: '',
-    },
-    published: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
+    tags: [String],
   },
-  {
-    timestamps: true,
-    tableName: 'articles',
-  }
+  { timestamps: true },
 );
 
-export default Article;
+export default mongoose.model("Article", ArticleSchema);

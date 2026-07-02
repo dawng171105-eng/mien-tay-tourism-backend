@@ -1,70 +1,54 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
+import mongoose from "mongoose";
 
-const Hotel = sequelize.define(
-  'Hotel',
+const HotelSchema = new mongoose.Schema(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     name: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: [true, "Please add a name"],
       trim: true,
     },
     description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    province: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      trim: true,
+      type: String,
+      required: [true, "Please add a description"],
     },
     address: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: [true, "Please add an address"],
     },
+    city: {
+      type: String,
+      required: [true, "Please add a city"],
+    },
+    province: {
+      type: String,
+      required: [true, "Please add a province"],
+    },
+    images: [String],
     pricePerNight: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-      validate: {
-        min: 0,
+      type: Number,
+      required: [true, "Please add price per night"],
+    },
+    ratingAverage: {
+      type: Number,
+      default: 0,
+      min: [0, "Rating must be at least 0"],
+      max: [5, "Rating must be at most 5"],
+    },
+    ratingQuantity: {
+      type: Number,
+      default: 0,
+    },
+    amenities: [String],
+    rooms: [
+      {
+        type: String,
+        description: String,
+        pricePerNight: Number,
+        maxOccupancy: Number,
       },
-    },
-    starRating: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        min: 1,
-        max: 5,
-      },
-    },
-    images: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: true,
-      defaultValue: [],
-    },
-    amenities: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: true,
-      defaultValue: [],
-    },
-    featured: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
+    ],
   },
-  {
-    timestamps: true,
-    tableName: 'hotels',
-  }
+  { timestamps: true },
 );
 
-export default Hotel;
+export default mongoose.model("Hotel", HotelSchema);

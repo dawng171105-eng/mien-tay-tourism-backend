@@ -1,140 +1,73 @@
-import { DataTypes } from "sequelize";
-import sequelize from "../config/db.js";
+import mongoose from "mongoose";
 
-const Tour = sequelize.define(
-  "Tour",
+const TourSchema = new mongoose.Schema(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     name: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: [true, "Please add a name"],
       trim: true,
     },
     description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
+      type: String,
+      required: [true, "Please add a description"],
     },
-    itinerary: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    dailyItinerary: {
-      type: DataTypes.JSONB,
-      allowNull: true,
-    },
-    province: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      trim: true,
-    },
-    provincesVisited: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: true,
-      defaultValue: [],
-    },
-    price: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-      validate: {
-        min: 0,
-      },
-    },
+    shortDescription: String,
+    images: [String],
     priceAdult: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-      validate: {
-        min: 0,
-      },
+      type: Number,
+      required: [true, "Please add adult price"],
     },
     priceChild: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-      validate: {
-        min: 0,
-      },
+      type: Number,
+      required: [true, "Please add child price"],
     },
     duration: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: [true, "Please add duration"],
     },
-    maxSlots: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        min: 1,
-      },
+    maxGroupSize: {
+      type: Number,
+      required: [true, "Please add max group size"],
     },
-    minSlots: {
-      type: DataTypes.INTEGER,
-      defaultValue: 1,
-      validate: {
-        min: 1,
-      },
+    difficulty: {
+      type: String,
+      enum: ["easy", "medium", "hard"],
+      default: "medium",
     },
-    availableSlots: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        min: 0,
-      },
+    ratingAverage: {
+      type: Number,
+      default: 0,
+      min: [0, "Rating must be at least 0"],
+      max: [5, "Rating must be at most 5"],
     },
-    images: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: true,
-      defaultValue: [],
-    },
-    departures: {
-      type: DataTypes.ARRAY(DataTypes.DATE),
-      allowNull: true,
-      defaultValue: [],
-    },
-    featured: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
+    ratingQuantity: {
+      type: Number,
+      default: 0,
     },
     isCombo: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+      type: Boolean,
+      default: false,
     },
     type: {
-      type: DataTypes.ENUM("relaxation", "nature", "culture", "adventure"),
-      defaultValue: "nature",
+      type: String,
+      enum: ["combo", "single"],
+      default: "single",
     },
-    departurePoint: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    inclusions: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: true,
-      defaultValue: [],
-    },
-    exclusions: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: true,
-      defaultValue: [],
-    },
-    rating: {
-      type: DataTypes.DECIMAL(3, 2),
-      defaultValue: 0,
-      validate: {
-        min: 0,
-        max: 5,
+    provincesVisited: [String],
+    departurePoint: String,
+    minSlots: Number,
+    inclusions: [String],
+    exclusions: [String],
+    dailyItinerary: [
+      {
+        day: Number,
+        title: String,
+        activities: [String],
       },
-    },
+    ],
+    startDates: [Date],
   },
-  {
-    timestamps: true,
-    tableName: "tours",
-  },
+  { timestamps: true },
 );
 
-export default Tour;
+export default mongoose.model("Tour", TourSchema);

@@ -1,72 +1,64 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
-import bcrypt from 'bcryptjs';
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
-const User = sequelize.define(
-  'User',
+const UserSchema = new mongoose.Schema(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     name: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: [true, "Please add a name"],
       trim: true,
     },
     email: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: [true, "Please add an email"],
       unique: true,
       trim: true,
-      validate: {
-        isEmail: true,
-      },
+      match: [
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+        "Please add a valid email",
+      ],
     },
     password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        len: [6, 255],
-      },
+      type: String,
+      required: [true, "Please add a password"],
+      minlength: 6,
     },
     role: {
-      type: DataTypes.ENUM('admin', 'customer'),
-      defaultValue: 'customer',
+      type: String,
+      enum: ["admin", "customer"],
+      default: "customer",
     },
     phone: {
-      type: DataTypes.STRING,
-      defaultValue: '',
+      type: String,
+      default: "",
     },
     avatar: {
-      type: DataTypes.STRING,
-      defaultValue: '',
+      type: String,
+      default: "",
     },
   },
-  {
-    timestamps: true,
-    tableName: 'users',
-  }
+  { timestamps: true },
 );
 
 // Hash password before saving
-User.beforeSave(async (user) => {
-  if (user.changed('password')) {
-    user.password = await bcrypt.hash(user.password, 10);
+UserSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next();
   }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Method to compare password
-User.prototype.comparePassword = async function (candidate) {
-  return bcrypt.compare(candidate, this.password);
+// Compare password
+UserSchema.methods.comparePassword = async function (candidate) {
+  return await bcrypt.compare(candidate, this.password);
 };
 
-// Method to convert to JSON without password
-User.prototype.toJSON = function () {
-  const values = { ...this.get() };
-  delete values.password;
-  return values;
+// Remove password from JSON
+UserSchema.methods.toJSON = function () {
+  const user = this.toObject();
+  delete user.password;
+  return user;
 };
 
-export default User;
+export default mongoose.model("User", UserSchema);
