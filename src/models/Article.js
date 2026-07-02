@@ -11,9 +11,19 @@ const ArticleSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please add content"],
     },
+    coverImage: {
+      type: String,
+      default: "",
+    },
     image: {
       type: String,
       default: "",
+    },
+    province: String,
+    category: String,
+    published: {
+      type: Boolean,
+      default: true,
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
