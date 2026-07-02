@@ -48,11 +48,7 @@ const TourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    type: {
-      type: String,
-      enum: ["combo", "single"],
-      default: "single",
-    },
+    type: String,
     province: String,
     featured: {
       type: Boolean,
