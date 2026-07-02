@@ -51,16 +51,23 @@ app.get("/", (req, res) => {
 app.use(errorHandler);
 
 async function start() {
-  await connectDB();
+  try {
+    await connectDB();
+    console.log("✅ Database connected");
+  } catch (err) {
+    console.error(
+      "❌ Database connection failed, but server will still start:",
+      err.message,
+    );
+  }
+
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`====================================`);
     console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
     console.log(`🌍 Environment: ${NODE_ENV}`);
+    console.log(`✅ Healthcheck available at /api/health`);
     console.log(`====================================`);
   });
 }
 
-start().catch((err) => {
-  console.error("❌ Failed to start server:", err);
-  process.exit(1);
-});
+start();
