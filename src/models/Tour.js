@@ -13,21 +13,21 @@ const TourSchema = new mongoose.Schema(
     },
     shortDescription: String,
     images: [String],
-    priceAdult: {
+    price: {
       type: Number,
-      required: [true, "Please add adult price"],
-    },
-    priceChild: {
-      type: Number,
-      required: [true, "Please add child price"],
+      required: [true, "Please add a price"],
     },
     duration: {
       type: String,
       required: [true, "Please add duration"],
     },
-    maxGroupSize: {
+    maxSlots: {
       type: Number,
-      required: [true, "Please add max group size"],
+      required: [true, "Please add max slots"],
+    },
+    availableSlots: {
+      type: Number,
+      required: [true, "Please add available slots"],
     },
     difficulty: {
       type: String,
@@ -53,11 +53,21 @@ const TourSchema = new mongoose.Schema(
       enum: ["combo", "single"],
       default: "single",
     },
+    province: String,
+    featured: {
+      type: Boolean,
+      default: false,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
     provincesVisited: [String],
     departurePoint: String,
     minSlots: Number,
     inclusions: [String],
     exclusions: [String],
+    itinerary: String,
     dailyItinerary: [
       {
         day: Number,
@@ -65,6 +75,7 @@ const TourSchema = new mongoose.Schema(
         activities: [String],
       },
     ],
+    departures: [Date],
     startDates: [Date],
   },
   { timestamps: true },

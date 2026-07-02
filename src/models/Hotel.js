@@ -15,10 +15,7 @@ const HotelSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please add an address"],
     },
-    city: {
-      type: String,
-      required: [true, "Please add a city"],
-    },
+    city: String,
     province: {
       type: String,
       required: [true, "Please add a province"],
@@ -27,6 +24,12 @@ const HotelSchema = new mongoose.Schema(
     pricePerNight: {
       type: Number,
       required: [true, "Please add price per night"],
+    },
+    starRating: {
+      type: Number,
+      default: 3,
+      min: 1,
+      max: 5,
     },
     ratingAverage: {
       type: Number,
@@ -39,6 +42,14 @@ const HotelSchema = new mongoose.Schema(
       default: 0,
     },
     amenities: [String],
+    featured: {
+      type: Boolean,
+      default: false,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
     rooms: [
       {
         type: String,
