@@ -11,6 +11,7 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 import hotelBookingRoutes from "./routes/hotelBookingRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -37,6 +38,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/hotel-bookings", hotelBookingRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/", (req, res) => {
   res.json({

@@ -2,7 +2,7 @@ import Hotel from "../models/Hotel.js";
 
 export async function getHotels(req, res, next) {
   try {
-    const { province, search, minPrice, maxPrice, starRating, featured } =
+    const { province, search, minPrice, maxPrice, starRating, featured, page, limit } =
       req.query;
     const filter = { active: true };
 
@@ -21,8 +21,29 @@ export async function getHotels(req, res, next) {
     if (starRating) filter.starRating = Number(starRating);
     if (featured === "true") filter.featured = true;
 
-    const hotels = await Hotel.find(filter).sort({ featured: -1, createdAt: -1 });
-    res.json(hotels);
+    // Backward compatible: stay an array unless the client explicitly asks to paginate.
+    if (page === undefined) {
+      const hotels = await Hotel.find(filter).sort({ featured: -1, createdAt: -1 });
+      return res.json(hotels);
+    }
+
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 12));
+    const [data, total] = await Promise.all([
+      Hotel.find(filter)
+        .sort({ featured: -1, createdAt: -1 })
+        .skip((pageNum - 1) * limitNum)
+        .limit(limitNum),
+      Hotel.countDocuments(filter),
+    ]);
+
+    res.json({
+      data,
+      page: pageNum,
+      pages: Math.max(1, Math.ceil(total / limitNum)),
+      total,
+      limit: limitNum,
+    });
   } catch (err) {
     next(err);
   }

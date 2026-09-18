@@ -11,7 +11,9 @@ export async function getTours(req, res, next) {
       featured,
       isCombo,
       type,
-      sort = "-featured -createdAt"
+      sort = "-featured -createdAt",
+      page,
+      limit,
     } = req.query;
     
     const filter = { active: true };
@@ -36,8 +38,29 @@ export async function getTours(req, res, next) {
     if (isCombo === "false") filter.isCombo = false;
     if (type) filter.type = type;
 
-    const tours = await Tour.find(filter).sort(sort);
-    res.json(tours);
+    // Backward compatible: stay an array unless the client explicitly asks to paginate.
+    if (page === undefined) {
+      const tours = await Tour.find(filter).sort(sort);
+      return res.json(tours);
+    }
+
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 12));
+    const [data, total] = await Promise.all([
+      Tour.find(filter)
+        .sort(sort)
+        .skip((pageNum - 1) * limitNum)
+        .limit(limitNum),
+      Tour.countDocuments(filter),
+    ]);
+
+    res.json({
+      data,
+      page: pageNum,
+      pages: Math.max(1, Math.ceil(total / limitNum)),
+      total,
+      limit: limitNum,
+    });
   } catch (err) {
     next(err);
   }
